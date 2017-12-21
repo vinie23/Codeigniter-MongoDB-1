@@ -268,10 +268,10 @@ Class Mongo_db{
 
 		try
 		{
-			$this->db->selectCollection($collection)->insertOne($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
-			if (isset($insert['_id']))
+			$g = $this->db->selectCollection($collection)->insertOne($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
+			if ($g->getInsertedId())
 			{
-				return ($insert['_id']);
+				return (if ($g->getInsertedId()));
 			}
 			else
 			{
@@ -312,10 +312,10 @@ Class Mongo_db{
 		}
 		try
 		{
-			$this->db->selectCollection($collection)->insertMany($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
-			if (isset($insert['_id']))
+			$g = $this->db->selectCollection($collection)->insertMany($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
+			if ($g->getInsertedId())
 			{
-				return ($insert['_id']);
+				return (if ($g->getInsertedId()));
 			}
 			else
 			{
@@ -780,7 +780,7 @@ Class Mongo_db{
 			show_error("In order to retrieve documents from MongoDB, a collection name must be passed", 500);
 		}
 		try{	
-                        $options = ['limit'=>(int) $this->limit, 'skip'=>(int) $this->offset, 'sort'=>$this->sorts, 'batchSize'=>(int)$this->limit, 'cursorType'=>2, ['projection'=>$this->selects]];
+                        $options = ['limit'=>(int) $this->limit, 'skip'=>(int) $this->offset, 'sort'=>$this->sorts, 'batchSize'=>(int)$this->limit, ['projection'=>$this->selects]];
                         $collection = new MongoDB\Collection($this->connect, $this->config[$this->activate]['database'].".".$collection); //$this->db->selectCollection($collection);
                         $documents = $collection
 			->find($this->wheres, $options);
